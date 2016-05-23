@@ -1,0 +1,17 @@
+{
+  "Comment": "Add ELB to Route53 domain",
+  "Changes": [
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "rancher-slaves.knepper.co",
+        "Type": "CNAME",
+        "AliasTarget": {
+          "HostedZoneId": "hosted-zone-token",
+          "DNSName": "dns-token",
+          "EvaluateTargetHealth": true
+        }
+      }
+    }
+  ]
+}

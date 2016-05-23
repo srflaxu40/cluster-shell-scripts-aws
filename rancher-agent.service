@@ -1,0 +1,12 @@
+[Unit]
+Description=Rancher Registration
+After=docker.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill rancher-agent
+ExecStartPre=-/usr/bin/docker rm rancher-agent
+ExecStartPre=/usr/bin/docker pull rancher/agent:v0.5.2
+ExecStart=/usr/bin/docker run -e CATTLE_HOST_LABELS='label-token' --name=rancher-agent -d --privileged -v /var/run/docker.sock:/var/run/docker.sock \
+    rancher/agent:v0.5.2 http://mgmt-ip-token:8080/v1/scripts/SECURITY_TOKEN
+ExecStop=/usr/bin/docker stop rancher-agent

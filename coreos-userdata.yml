@@ -1,0 +1,36 @@
+#cloud-config
+
+coreos:
+  etcd2:
+    # generate a new  for each unique cluster from https://discovery.etcd.io/new?size=3
+    # specify the initial size of your cluster with ?size=X
+    discovery: etcd-token
+    # multi-region and multi-cloud deployments need to use $public_ipv4
+    advertise-client-urls: http://$private_ipv4:2379,http://$private_ipv4:4001
+    initial-advertise-peer-urls: http://$private_ipv4:2380
+    # listen on both the official ports and the legacy ports
+    # legacy ports can be omitted if your application doesn't depend on them
+    listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
+    listen-peer-urls: http://$private_ipv4:2380,http://$private_ipv4:7001
+  units:
+    - name: etcd2.service
+      command: start
+    - name: fleet.service
+      command: start
+    - name: "rancher-agent.service"
+      command: "start"
+      content: |
+        [Unit]
+        Description=Rancher Registration
+        Author=John Knepper
+        After=docker.service
+        
+        [Service]
+        TimeoutStartSec=0
+        ExecStartPre=-/usr/bin/docker kill rancher-agent
+        ExecStartPre=-/usr/bin/docker rm rancher-agent
+        ExecStartPre=/usr/bin/docker pull rancher/agent:v0.5.2
+        ExecStart=/usr/bin/docker run --name=rancher-agent -d --privileged -v /var/run/docker.sock:/var/run/docker.sock \
+            rancher/agent:v0.5.2 http://mgmt-ip-token:8080/v1/scripts/SECURITY_TOKEN
+        ExecStop=/usr/bin/docker stop rancher-agent
+
