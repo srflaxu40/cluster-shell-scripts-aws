@@ -3,7 +3,7 @@
 This will spin up a coreos cluster for rancher.  Inside the coreos-userdata.yml file are settings to start the rancher agent that connets an individual node to the master IP address, which is a command line parameter.
 This is intended as a proof of concept for a multi-region system with Rancher.
 
-USAGE:
+* USAGE:
 
 ```./create_rancher_os_cluster.sh -n jpop1 -v <VPC ID> -a <AMI ID>  -z <SUBNET ID> -h <HOSTED ZONE ID> -x 3 -u 52.53.231.164 -g <SECURITY GROUP ID> -t m3.medium -y <RANCHER GENERATED TOKEN>```
 
